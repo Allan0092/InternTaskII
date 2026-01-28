@@ -13,12 +13,12 @@ const sendAxiosRequest = async ({
   query = {},
   header = {},
 }) => {
-  const api = axios.create({
-    baseURL: `${URL}`,
-    headers: header,
-    url: url,
-    method: method,
-  });
+  // const api = axios.create({
+  //   baseURL: `${URL}`,
+  //   headers: header,
+  //   url: url,
+  //   method: method,
+  // });
   try {
     const response = await axios({
       method: method.toLowerCase(),

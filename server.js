@@ -5,11 +5,13 @@ import Parser from "koa-bodyparser";
 import Router from "koa-router";
 
 import blogRouter from "./routes/BlogRoute.js";
+import userRouter from "./routes/UserRoute.js";
 
 const app = new Koa();
 const router = new Router({ prefix: "/api" });
 
 router.use(blogRouter.routes());
+router.use(userRouter.routes());
 
 // router.post("/blog", addBlog);
 // router.get("/blog/:slug", getBySlug);
