@@ -1,4 +1,5 @@
 import { createBlog, getAllBlogs, getBlogBySlug } from "../model/Blog.js";
+import { generateResponseBody } from "../utils/index.js";
 
 let placeholderData = [
   {
@@ -24,14 +25,6 @@ const generateSlugs = (title) => {
   return title.replaceAll(" ", "_").toLowerCase();
 };
 
-const generateResponseBody = (
-  success = false,
-  message = "An error occured",
-  data = {},
-) => {
-  return { success: success, message: message, data: data };
-};
-
 const addBlog = async (ctx) => {
   try {
     const { title, content } = ctx.request.body;
@@ -43,7 +36,10 @@ const addBlog = async (ctx) => {
       content: content,
       slug: slug,
     });
-    ctx.body = generateResponseBody(true, "blog added successfully");
+    ctx.body = generateResponseBody({
+      status: true,
+      message: "blog added successfully",
+    });
   } catch (e) {
     console.error(`Error in addBlog:\n${e.message}`);
     ctx.response.status = 500;
@@ -56,11 +52,11 @@ const getAllBlog = async (ctx) => {
     console.log("Get All Blog Function");
     const blogs = await getAllBlogs();
     console.log(`Blogs retrieved success \n`);
-    ctx.body = generateResponseBody(
-      true,
-      "All Blog retrieved successfully",
-      blogs,
-    );
+    ctx.body = generateResponseBody({
+      status: true,
+      message: "All Blog retrieved successfully",
+      data: blogs,
+    });
   } catch (e) {
     console.error(`Error in getAllBlog: ${e.message}`);
     ctx.response.status = 500;
@@ -74,7 +70,11 @@ const getBySlug = async (ctx) => {
     console.error(`Get by Slug: ${slug}`);
     // const blog = placeholderData.find((value) => value.slug === slug);
     const blog = await getBlogBySlug(slug);
-    ctx.body = generateResponseBody(true, "Slug retrieved successfully", blog);
+    ctx.body = generateResponseBody({
+      status: true,
+      message: "Slug retrieved successfully",
+      data: blog,
+    });
   } catch (e) {
     console.error(e.message);
     ctx.response.status = 500;
