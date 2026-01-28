@@ -62,11 +62,8 @@ const getBySlug = async (ctx) => {
   try {
     const { slug } = ctx.request.params;
     console.error(`Get by Slug: ${slug}`);
-    ctx.body = generateResponseBody(
-      true,
-      "Slug retrieved successfully",
-      placeholderData[0],
-    );
+    const blog = placeholderData.find((value) => value.slug === slug);
+    ctx.body = generateResponseBody(true, "Slug retrieved successfully", blog);
   } catch (e) {
     console.error(e.message);
     ctx.response.status = 500;
