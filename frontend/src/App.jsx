@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Blog from "./pages/Blog";
 import Homepage from "./pages/Homepage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const App = () => {
   return (
@@ -10,6 +12,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/blog/:slug" element={<Blog />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </BrowserRouter>
     </>

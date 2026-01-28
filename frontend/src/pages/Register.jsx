@@ -17,7 +17,15 @@ const Register = () => {
         <h1>Register Page</h1>
       </div>
       <div>
-        <form></form>
+        <form>
+          <div>name</div>
+          <div>email</div>
+          <div>password</div>
+          <div>confirm password</div>
+          <div>
+            <button type="submit">Create new account</button>
+          </div>
+        </form>
       </div>
     </>
   );

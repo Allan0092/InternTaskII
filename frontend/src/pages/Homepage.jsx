@@ -49,8 +49,18 @@ const Homepage = () => {
       <title>Homepage</title>
 
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900 ">Blog Platform</h1>
+        <div className="flex-row flex-wrap">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <h1 className="text-3xl font-bold text-gray-900 ">Blog Platform</h1>
+          </div>
+          <div className="">
+            <button
+              className="border-2 p-3 w-auto"
+              onClick={() => navigate("/login")}
+            >
+              login
+            </button>
+          </div>
         </div>
       </header>
 
