@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import { addNewUser, getAllUsers, getUserByEmail } from "../model/User.js";
 import { generateResponseBody } from "../utils/index.js";
 
@@ -50,12 +51,25 @@ const login = async (ctx) => {
     const { email, password } = ctx.request.body;
     const user = await getUserByEmail(email);
     if (!user) {
-      console.error(`Login error: ${e.message}`);
-      ctx.response.body = 500;
-      ctx.body = generateResponseBody({
+      ctx.response.status = 401;
+      ctx.response.body = generateResponseBody({
         message: "User email cannot be found",
       });
+      return;
     }
+    const matchPassword = await bcrypt.compare(password, user.password);
+    if (!matchPassword) {
+      ctx.response.status = 401;
+      ctx.response.body = generateResponseBody({
+        message: "Password incorrect",
+      });
+      return;
+    }
+    ctx.body = generateResponseBody({
+      success: true,
+      message: "User login successful",
+      data: { token: "somekindoftokenissupposedtobehere" }, // TODO: add token
+    });
   } catch (e) {
     console.error(`Login error: ${e.message}`);
     ctx.response.body = 500;
@@ -63,4 +77,4 @@ const login = async (ctx) => {
   }
 };
 
-export { getUsers, registerUser };
+export { getUsers, login, registerUser };

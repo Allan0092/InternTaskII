@@ -1,5 +1,5 @@
 import Router from "koa-router";
-import { getUsers, registerUser } from "../controller/UserController.js";
+import { getUsers, login, registerUser } from "../controller/UserController.js";
 
 const userRouter = new Router({
   prefix: "/user",
@@ -7,5 +7,6 @@ const userRouter = new Router({
 
 userRouter.get("/all", getUsers);
 userRouter.post("/register", registerUser);
+userRouter.post("/login", login);
 
 export default userRouter;
