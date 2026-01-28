@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import Blog from "./Blog";
-import Homepage from "./Homepage";
+import Blog from "./pages/Blog";
+import Homepage from "./pages/Homepage";
 
 const App = () => {
   return (
