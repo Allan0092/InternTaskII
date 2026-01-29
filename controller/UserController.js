@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { addNewUser, getAllUsers, getUserByEmail } from "../model/User.js";
+import { authoriseRole } from "../security/Auth.js";
 import { generateResponseBody } from "../utils/index.js";
 
 const registerUser = async (ctx) => {
@@ -32,6 +34,14 @@ const registerUser = async (ctx) => {
 
 const getUsers = async (ctx) => {
   try {
+    // ADMIN validation
+    const token = ctx.header["authorization"]?.split(" ")[1];
+    if (!authoriseRole(token, "ADMIN")) {
+      ctx.response.status = 403;
+      ctx.body = generateResponseBody({ message: "Insufficient permission" });
+      return;
+    }
+
     const users = await getAllUsers();
     if (!users) {
       ctx.response.status = 500;
@@ -65,10 +75,15 @@ const login = async (ctx) => {
       });
       return;
     }
+    const token = jwt.sign(
+      { email: email, name: user.name, role: user.role },
+      process.env.SECRET_KEY,
+      { expiresIn: "1h" },
+    );
     ctx.body = generateResponseBody({
       success: true,
       message: "User login successful",
-      data: { token: "somekindoftokenissupposedtobehere" }, // TODO: add token
+      data: { token: token },
     });
   } catch (e) {
     console.error(`Login error: ${e.message}`);
