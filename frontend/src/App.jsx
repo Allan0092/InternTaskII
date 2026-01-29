@@ -4,8 +4,10 @@ import Blog from "./pages/Blog";
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AdminPanel from "./private/AdminPanel";
 
 const App = () => {
+  // const [userRole, setUserRole] = useState("");
   return (
     <>
       <BrowserRouter>
@@ -14,6 +16,7 @@ const App = () => {
           <Route path="/blog/:slug" element={<Blog />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/admin" element={<AdminPanel />} />
         </Routes>
       </BrowserRouter>
     </>

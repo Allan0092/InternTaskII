@@ -35,7 +35,7 @@ const registerUser = async (ctx) => {
 const getUsers = async (ctx) => {
   try {
     // ADMIN validation
-    const token = ctx.header["authorization"]?.split(" ")[1];
+    const token = ctx.header["authorization"];
     if (!authoriseRole(token, "ADMIN")) {
       ctx.response.status = 403;
       ctx.body = generateResponseBody({ message: "Insufficient permission" });
@@ -48,7 +48,11 @@ const getUsers = async (ctx) => {
       ctx.body = generateResponseBody({ message: "Could not get users" });
       return;
     }
-    ctx.body = users;
+    ctx.body = generateResponseBody({
+      success: true,
+      message: "Users retrieved successfully",
+      data: users,
+    });
     console.log(`Users retrieved: ${users}`);
   } catch (e) {
     ctx.response.body = 500;
@@ -83,7 +87,7 @@ const login = async (ctx) => {
     ctx.body = generateResponseBody({
       success: true,
       message: "User login successful",
-      data: { token: token },
+      data: { token: token, role: user.role },
     });
   } catch (e) {
     console.error(`Login error: ${e.message}`);
