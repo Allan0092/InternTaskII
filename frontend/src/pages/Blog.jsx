@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { sendAxiosRequest } from "../api";
+import { sendAxiosRequest } from "../utils/api";
 
 const Blog = () => {
   const { slug } = useParams();
@@ -9,7 +9,10 @@ const Blog = () => {
 
   useEffect(() => {
     const fetchBlog = async () => {
-      const res = await sendAxiosRequest({ method: "get", url: `/${slug}` });
+      const res = await sendAxiosRequest({
+        method: "get",
+        url: `/blog/${slug}`,
+      });
       console.log(res.data);
       setBlog(res.data);
     };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { sendAxiosRequest } from "../api";
+import { sendAxiosRequest } from "../utils/api";
 
 const Homepage = () => {
   const [blogs, setblogs] = useState([]);
@@ -8,7 +8,7 @@ const Homepage = () => {
 
   const fetchBlogs = async () => {
     try {
-      const blogs = await sendAxiosRequest({ method: "get" });
+      const blogs = await sendAxiosRequest({ method: "get", url: "/blog" });
       console.log(blogs);
       setblogs(blogs.data);
     } catch (error) {
@@ -36,7 +36,13 @@ const Homepage = () => {
     e.preventDefault();
     console.log(`Form submitted with data`, formData);
     try {
-      const res = await sendAxiosRequest({ method: "post", body: formData });
+      const res = await sendAxiosRequest({
+        method: "post",
+        body: formData,
+        url: "/blog",
+      });
+      console.log(res);
+
       setFormData({ title: "", content: "" });
       await fetchBlogs();
     } catch (e) {
