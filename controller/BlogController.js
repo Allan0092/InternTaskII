@@ -36,12 +36,14 @@ const addBlog = async (ctx) => {
       content: content,
       slug: slug,
     });
+    if (!save) {
+    }
     ctx.body = generateResponseBody({
-      status: true,
+      success: true,
       message: "blog added successfully",
     });
   } catch (e) {
-    console.error(`Error in addBlog:\n${e.message}`);
+    console.log(`Error in addBlog:\n${e.message}`);
     ctx.response.status = 500;
     ctx.body = generateResponseBody();
   }
@@ -53,7 +55,7 @@ const getAllBlog = async (ctx) => {
     const blogs = await getAllBlogs();
     console.log(`Blogs retrieved success \n`);
     ctx.body = generateResponseBody({
-      status: true,
+      success: true,
       message: "All Blog retrieved successfully",
       data: blogs,
     });
@@ -71,7 +73,7 @@ const getBySlug = async (ctx) => {
     // const blog = placeholderData.find((value) => value.slug === slug);
     const blog = await getBlogBySlug(slug);
     ctx.body = generateResponseBody({
-      status: true,
+      success: true,
       message: "Slug retrieved successfully",
       data: blog,
     });
