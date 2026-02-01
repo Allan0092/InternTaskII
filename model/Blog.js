@@ -2,12 +2,13 @@ import { prisma } from "../prisma/prisma.ts";
 
 const createBlog = async (blog) => {
   try {
-    const { title, slug, content } = blog;
+    const { title, slug, content, author } = blog;
     const conn = await prisma.blog.create({
       data: {
         title: title,
         slug: slug,
         content: content,
+        author: author,
       },
     });
     return conn;

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sendAxiosRequest } from "../utils/api";
-import { storeToken } from "../utils/auth";
+import { logout, setCurrentName, storeRole, storeToken } from "../utils/auth";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -35,6 +35,8 @@ const Login = () => {
       if (req.success) {
         console.log(`User token after login: ${req}`);
         storeToken(req.data.token);
+        storeRole(req.data.role);
+        setCurrentName(req.data.name);
         navigate("/");
       } else {
         setErrorMsg(req.data.message || "Login failed");
@@ -56,6 +58,10 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    logout();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">

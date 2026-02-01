@@ -87,7 +87,7 @@ const login = async (ctx) => {
     ctx.body = generateResponseBody({
       success: true,
       message: "User login successful",
-      data: { token: token, role: user.role },
+      data: { token: token, role: user.role, name: user.name },
     });
   } catch (e) {
     console.error(`Login error: ${e.message}`);

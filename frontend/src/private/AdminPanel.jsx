@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { sendAxiosRequest } from "../utils/api";
 import { getToken } from "../utils/auth";
 
@@ -7,9 +8,11 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const navigate = useNavigate();
+
   const fetchUsers = async () => {
     try {
-      console.log(`admin token: ${getToken()}`);
+      //   console.log(`admin token: ${getToken()}`);
 
       setLoading(true);
       const res = await sendAxiosRequest({
@@ -52,8 +55,15 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Admin Panel</h1>
-
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 ">Admin Panel</h1>
+        <button
+          className="border m-2 p-1"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          back to Homepage
+        </button>
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <table className="w-full">
             <thead className="bg-blue-500 text-white">

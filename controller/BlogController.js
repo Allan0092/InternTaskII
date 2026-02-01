@@ -1,4 +1,5 @@
 import { createBlog, getAllBlogs, getBlogBySlug } from "../model/Blog.js";
+import { authoriseRole } from "../security/Auth.js";
 import { generateResponseBody } from "../utils/index.js";
 
 let placeholderData = [
@@ -27,16 +28,34 @@ const generateSlugs = (title) => {
 
 const addBlog = async (ctx) => {
   try {
-    const { title, content } = ctx.request.body;
+    // Authenticate
+    const token = ctx.header["authorization"];
+    if (!token) {
+      ctx.body = generateResponseBody({
+        message: "Please Log in to post a blog",
+      });
+      return;
+    } else if (
+      !authoriseRole(token, "USER") &&
+      !authoriseRole(token, "ADMIN")
+    ) {
+      ctx.body = generateResponseBody({ message: "Insufficient permission" });
+      return;
+    }
+
+    const { title, content, author } = ctx.request.body;
     console.log(`Adding Blog title: ${title} `);
     const slug = generateSlugs(title);
     console.log(`Generated Slug: ${slug}`);
+    console.log(`Author Name: ${author}`);
     const save = await createBlog({
       title: title,
       content: content,
       slug: slug,
+      author: author,
     });
     if (!save) {
+      ctx.body = generateResponseBody({ message: "Could not save blog" });
     }
     ctx.body = generateResponseBody({
       success: true,

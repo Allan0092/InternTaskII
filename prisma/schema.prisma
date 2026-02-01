@@ -15,6 +15,7 @@ model Blog {
   title     String
   slug      String   @unique
   content   String
+  author    String   @default("Ram")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
