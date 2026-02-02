@@ -17,7 +17,7 @@ const Homepage = () => {
 
   const fetchBlogs = async () => {
     try {
-      const blogs = await sendAxiosRequest({ method: "get", url: "/blog" });
+      const blogs = await sendAxiosRequest({ method: "get", url: "/blogs" });
       console.log(blogs);
       setblogs(blogs.data);
     } catch (error) {
@@ -43,6 +43,7 @@ const Homepage = () => {
   };
 
   const handleLogout = () => {
+    setAdminUser(false);
     setIsSignedIn(false);
     logout();
   };
@@ -62,7 +63,7 @@ const Homepage = () => {
       const res = await sendAxiosRequest({
         method: "post",
         body: dataToSubmit,
-        url: "/blog",
+        url: "/blogs",
         header: { authorization: getToken() },
       });
       console.log(res);
@@ -79,7 +80,7 @@ const Homepage = () => {
       <title>Homepage</title>
 
       <header className="bg-white shadow-sm">
-        <div className="flex flex-row">
+        <div className="flex flex-row-reverse">
           <div className="">
             {!isSignedIn ? (
               <button
@@ -99,7 +100,12 @@ const Homepage = () => {
           </div>
           <div>
             {AdminUser && (
-              <button className="border-2 py-3 px-5 bg-gray-500 text-black rounded-2xl mx-2">
+              <button
+                className="border-2 py-3 px-5 bg-gray-500 text-black rounded-2xl mx-2"
+                onClick={() => {
+                  navigate("/admin");
+                }}
+              >
                 Admin
               </button>
             )}

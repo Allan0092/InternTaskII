@@ -6,7 +6,7 @@ import {
 } from "../controller/BlogController.js";
 
 const blogRouter = new Router({
-  prefix: "/blog",
+  prefix: "/blogs",
 });
 
 blogRouter.get("/", getAllBlog);

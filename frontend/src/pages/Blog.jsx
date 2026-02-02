@@ -12,7 +12,7 @@ const Blog = () => {
       try {
         const res = await sendAxiosRequest({
           method: "get",
-          url: `/blog/${slug}`,
+          url: `/blogs/${slug}`,
         });
         console.log(res.data);
         setBlog(res.data);

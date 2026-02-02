@@ -23,7 +23,7 @@ const Login = () => {
       const req = await sendAxiosRequest({
         method: "post",
         body: formData,
-        url: "/user/login",
+        url: "/users/login",
       });
       // console.log(`Request: ${req.success}`);
 

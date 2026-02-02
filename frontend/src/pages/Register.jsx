@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { sendAxiosRequest } from "../utils/api";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +9,8 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
+  const [Loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,6 +19,38 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const req = await sendAxiosRequest({
+        method: "post",
+        body: formData,
+        url: "/users/register",
+      });
+      if (!req || !req.success) {
+        setErrorMsg("Invalid response from server");
+        return;
+      }
+
+      if (req.success) {
+        navigate("/login");
+      } else {
+        setErrorMsg(req.data.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Register error:", error);
+
+      if (error.response) {
+        setErrorMsg(
+          error.response.data?.message ||
+            `Error: ${error.response.status} - Invalid credentials`,
+        );
+      } else if (error.request) {
+        setErrorMsg("No response from server. Please check your connection.");
+      } else {
+        setErrorMsg("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,6 +79,7 @@ const Register = () => {
                 type="text"
                 name="name"
                 id="name"
+                disabled={Loading}
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="John Doe"
@@ -62,6 +99,7 @@ const Register = () => {
                 type="email"
                 name="email"
                 id="email"
+                disabled={Loading}
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="your@email.com"
@@ -81,6 +119,7 @@ const Register = () => {
                 type="password"
                 name="password"
                 id="password"
+                disabled={Loading}
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="••••••••"
@@ -100,6 +139,7 @@ const Register = () => {
                 type="password"
                 name="confirmPassword"
                 id="confirmPassword"
+                disabled={Loading}
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="••••••••"
@@ -109,6 +149,7 @@ const Register = () => {
 
             <button
               className="w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded-lg hover:from-amber-500 hover:to-orange-600 transform hover:scale-[1.02] transition-all duration-200 shadow-lg"
+              disabled={Loading}
               type="submit"
             >
               Create Account

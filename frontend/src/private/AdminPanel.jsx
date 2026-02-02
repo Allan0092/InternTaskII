@@ -16,7 +16,7 @@ const AdminPanel = () => {
 
       setLoading(true);
       const res = await sendAxiosRequest({
-        url: "/user/all",
+        url: "/users",
         header: { authorization: getToken() },
       });
 
