@@ -39,4 +39,22 @@ const addNewUser = async ({ email, name, password }) => {
   }
 };
 
-export { addNewUser, getAllUsers, getUserByEmail };
+const addNewAdminUser = async ({
+  email = "admin@email.com",
+  name = "admin",
+  password = "Admin@12",
+  role = "ADMIN",
+} = {}) => {
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await prisma.user.create({
+      data: { email: email, password: hashedPassword, name: name, role: role },
+    });
+    return true;
+  } catch (e) {
+    console.error(e.message);
+    return false;
+  }
+};
+
+export { addNewAdminUser, addNewUser, getAllUsers, getUserByEmail };
