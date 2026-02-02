@@ -1,5 +1,5 @@
+import { authoriseRole } from "../middleware/Auth.js";
 import { createBlog, getAllBlogs, getBlogBySlug } from "../model/Blog.js";
-import { authoriseRole } from "../security/Auth.js";
 import { generateResponseBody } from "../utils/index.js";
 
 let placeholderData = [

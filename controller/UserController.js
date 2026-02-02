@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { authoriseRole } from "../middleware/Auth.js";
 import { addNewUser, getAllUsers, getUserByEmail } from "../model/User.js";
-import { authoriseRole } from "../security/Auth.js";
 import { generateResponseBody } from "../utils/index.js";
 
 const registerUser = async (ctx) => {
