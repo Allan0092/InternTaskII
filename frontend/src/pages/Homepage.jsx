@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sendAxiosRequest } from "../utils/api";
-import { getCurrentName, getToken, isLoggedIn, logout } from "../utils/auth";
+import {
+  getCurrentName,
+  getToken,
+  isAdmin,
+  isLoggedIn,
+  logout,
+} from "../utils/auth";
 
 const Homepage = () => {
   const [blogs, setblogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState(isLoggedIn());
+  const [AdminUser, setAdminUser] = useState(isAdmin());
 
   const fetchBlogs = async () => {
     try {
@@ -72,7 +79,7 @@ const Homepage = () => {
       <title>Homepage</title>
 
       <header className="bg-white shadow-sm">
-        <div className="flex-row flex-wrap">
+        <div className="flex flex-row">
           <div className="">
             {!isSignedIn ? (
               <button
@@ -87,6 +94,13 @@ const Homepage = () => {
                 onClick={handleLogout}
               >
                 logout
+              </button>
+            )}
+          </div>
+          <div>
+            {AdminUser && (
+              <button className="border-2 py-3 px-5 bg-gray-500 text-black rounded-2xl mx-2">
+                Admin
               </button>
             )}
           </div>
