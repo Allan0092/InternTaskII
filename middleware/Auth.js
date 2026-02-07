@@ -5,8 +5,6 @@ const authenticateToken = (token) => {
   //   const token = ctx.request.header("Authorization")?.split(" ")[1];
   console.log(`Authorization token: ${token}`);
   if (!token) {
-    ctx.response.status = 401;
-    ctx.body = generateResponseBody({ message: "No token provided" });
     return false;
   }
   try {
@@ -29,4 +27,42 @@ const authoriseRole = (token, role) => {
   }
 };
 
-export { authenticateToken, authoriseRole };
+const authorizeAdminRequest = async (ctx, next) => {
+  try {
+    const token = ctx.header["authorization"].split(" ")[1];
+    const isValid = authoriseRole(token, "ADMIN");
+    if (!isValid) throw new Error("Action not authorized");
+
+    await next();
+  } catch (e) {
+    console.error(
+      `Error in authorizing role: ${e.message ?? "Error in authorising role"}`,
+    );
+    ctx.body = generateResponseBody({
+      message: e.message ?? "Error in authorising role",
+    });
+  }
+};
+
+const authorizeUserEmail = async (ctx, next) => {
+  try {
+    const { email } = ctx.request.body;
+    const token = ctx.header["authorization"].split(" ")[1];
+
+    if (!jwt.verify(token, process.env.SECRET_KEY)) {
+      ctx.body = generateResponseBody({ message: "Invalid token" });
+      return false;
+    }
+    const decoded = jwt.decode(token);
+    if (decoded.email === email) await next();
+  } catch (e) {
+    ctx.body = generateResponseBody({ message: "error in authorizing email" });
+  }
+};
+
+export {
+  authenticateToken,
+  authoriseRole,
+  authorizeAdminRequest,
+  authorizeUserEmail,
+};

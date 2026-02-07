@@ -17,7 +17,7 @@ const AdminPanel = () => {
       setLoading(true);
       const res = await sendAxiosRequest({
         url: "/users",
-        header: { authorization: getToken() },
+        header: { authorization: `Bearer ${getToken()}` },
       });
 
       if (res && res.data) {

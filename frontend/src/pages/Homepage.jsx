@@ -13,13 +13,15 @@ const Homepage = () => {
   const [blogs, setblogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState(isLoggedIn());
-  const [AdminUser, setAdminUser] = useState(isAdmin());
+  const [adminUser, setAdminUser] = useState(isAdmin());
+  const [isDeleteButtonDisabled, setIsDeleteButonDisabled] = useState(false);
 
   const fetchBlogs = async () => {
     try {
       const blogs = await sendAxiosRequest({ method: "get", url: "/blogs" });
       console.log(blogs);
       setblogs(blogs.data);
+      setIsDeleteButonDisabled(false);
     } catch (error) {
       console.error("Error fetching blogs:", error);
     } finally {
@@ -48,6 +50,22 @@ const Homepage = () => {
     logout();
   };
 
+  const handleDelete = async (id) => {
+    setIsDeleteButonDisabled(true);
+    try {
+      const res = await sendAxiosRequest({
+        method: "delete",
+        url: `/blogs/${id}`,
+        header: { authorization: `Bearer ${getToken()}` },
+      });
+      console.log(res);
+      await fetchBlogs();
+    } catch (e) {
+      console.error(`Error in deletion: ${e}`);
+      setIsDeleteButonDisabled(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -64,7 +82,7 @@ const Homepage = () => {
         method: "post",
         body: dataToSubmit,
         url: "/blogs",
-        header: { authorization: getToken() },
+        header: { authorization: `Bearer ${getToken()}` },
       });
       console.log(res);
 
@@ -99,7 +117,7 @@ const Homepage = () => {
             )}
           </div>
           <div>
-            {AdminUser && (
+            {adminUser && (
               <button
                 className="border-2 py-3 px-5 bg-gray-500 text-black rounded-2xl mx-2"
                 onClick={() => {
@@ -128,7 +146,7 @@ const Homepage = () => {
                 <div className="text-center py-8">
                   <p className="text-gray-500">No blogs yet. Create one!</p>
                 </div>
-              ) : (
+              ) : !adminUser ? (
                 <div className="space-y-3">
                   {blogs.map((blog) => (
                     <div
@@ -139,6 +157,31 @@ const Homepage = () => {
                       <h3 className="text-lg font-medium text-gray-900">
                         {blog.title}
                       </h3>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {blogs.map((blog) => (
+                    <div
+                      key={blog.slug}
+                      className="flex flex-row place-content-between p-4 border border-gray-200 rounded-lg "
+                    >
+                      <h3
+                        className="text-lg font-medium text-gray-900"
+                        onClick={() => navigate(`/blog/${blog.slug}`)}
+                      >
+                        {blog.title}
+                      </h3>
+                      <button
+                        disabled={isDeleteButtonDisabled}
+                        className="text-red-500 font-bold disabled:text-gray-500"
+                        onClick={() => {
+                          handleDelete(blog.id);
+                        }}
+                      >
+                        Delete
+                      </button>
                     </div>
                   ))}
                 </div>
