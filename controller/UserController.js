@@ -35,7 +35,7 @@ const registerUser = async (ctx) => {
 const getUsers = async (ctx) => {
   try {
     // ADMIN validation
-    const token = ctx.header["authorization"];
+    const token = ctx.header.authorization?.split(" ")[1];
     if (!authoriseRole(token, "ADMIN")) {
       ctx.response.status = 403;
       ctx.body = generateResponseBody({ message: "Insufficient permission" });
@@ -82,7 +82,7 @@ const login = async (ctx) => {
     const token = jwt.sign(
       { email: email, name: user.name, role: user.role },
       process.env.SECRET_KEY,
-      { expiresIn: "1h" },
+      { expiresIn: "12h" },
     );
     ctx.body = generateResponseBody({
       success: true,

@@ -46,4 +46,18 @@ const getBlogBySlug = async (slug) => {
   }
 };
 
-export { createBlog, getAllBlogs, getBlogBySlug };
+const removeBlog = async (id) => {
+  try {
+    const blog = await prisma.blog.delete({ where: { id: id } });
+    console.log(`Successfully deleted blog: ${blog}`);
+    if (!blog) {
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error(`Error deleting blog: ${e.message}`);
+    return false;
+  }
+};
+
+export { createBlog, getAllBlogs, getBlogBySlug, removeBlog };
