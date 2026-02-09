@@ -1,12 +1,81 @@
+import multer from "@koa/multer";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   getAvatarURl,
   getOTPCode,
   getOtpExpireDate,
+  setAvatarURL,
   setOtpCodeAndExpiry,
 } from "../model/Profile.js";
 import { getUserByEmail } from "../model/User.js";
-import { generateResponseBody } from "../utils/index.js";
+import { extractEmailFromToken, generateResponseBody } from "../utils/index.js";
 import { sendOtpMail } from "./MailController.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "../public/uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `avatar-${uniqueSuffix}${ext}`);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed!"), false);
+  }
+};
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+});
+
+const saveAvatarUrl = async (ctx) => {
+  try {
+    const file = ctx.request.file;
+    if (!file) throw new Error("No file uploaded.");
+
+    const token = ctx.header["authorization"]?.split(" ")[1];
+    if (!token) throw new Error("Token not provided.");
+
+    const email = await extractEmailFromToken(token);
+    if (!email) throw new Error("Email not provided in token");
+
+    const fileName = file.filename;
+    const result = await setAvatarURL(email, fileName);
+
+    if (!result) throw new Error("Failed to save avatar URL");
+
+    ctx.body = generateResponseBody({
+      success: true,
+      message: "Image uploaded successfully",
+      data: { avatarURL: fileName },
+    });
+  } catch (e) {
+    console.error(`Error in saving avatar url: ${e.message}`);
+
+    ctx.body = generateResponseBody({
+      error: e.message ?? "Could not save image",
+    });
+  }
+};
 
 const generateOtpDigitsAndExpiry = ({ validMinutes = 10, digits = 6 } = {}) => {
   try {
@@ -23,7 +92,9 @@ const generateOtpDigitsAndExpiry = ({ validMinutes = 10, digits = 6 } = {}) => {
 
 const provideAvatarURL = async (ctx) => {
   try {
-    const { email } = ctx.request.body;
+    // const { email } = ctx.request.body;
+    const token = ctx.header["authorization"]?.split(" ")[1];
+    const email = await extractEmailFromToken(token);
     const url = await getAvatarURl(email);
     if (!url) {
       ctx.response.status = 404;
@@ -41,19 +112,6 @@ const provideAvatarURL = async (ctx) => {
     });
   }
 };
-
-const saveAvatarUrl = async (ctx) => {
-  try {
-  } catch (e) {
-    console.error(`Error in saving avatar url`);
-
-    ctx.body = generateResponseBody({
-      success: false,
-      message: "Could not save data",
-    });
-  }
-};
-
 const sendOtp = async (ctx) => {
   try {
     const { email } = ctx.request.body;
@@ -122,4 +180,11 @@ const verifyOTP = (ctx) => {
   }
 };
 
-export { provideAvatarURL, sendOtp, verifyOTP };
+export {
+  getAvatarURl,
+  provideAvatarURL,
+  saveAvatarUrl,
+  sendOtp,
+  upload,
+  verifyOTP,
+};

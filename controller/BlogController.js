@@ -14,7 +14,7 @@ const generateSlugs = (title) => {
 const addBlog = async (ctx) => {
   try {
     // Authenticate
-    const token = ctx.header["authorization"].split(" ")[1];
+    const token = ctx.header["authorization"]?.split(" ")[1];
     if (!token) {
       // ctx.body = generateResponseBody({
       //   message: "Please Log in to post a blog",

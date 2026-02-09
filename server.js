@@ -3,6 +3,8 @@ import "dotenv/config.js";
 import Koa from "koa";
 import Parser from "koa-bodyparser";
 import Router from "koa-router";
+import serve from "koa-static";
+import path from "node:path";
 
 import blogRouter from "./routes/BlogRoute.js";
 import profileRouter from "./routes/ProfileRoute.js";
@@ -27,6 +29,7 @@ router.use(blogRouter.routes());
 router.use(userRouter.routes());
 router.use(profileRouter.routes());
 
+app.use(serve(path.join(process.cwd(), "public")));
 app.use(cors());
 app.use(Parser());
 

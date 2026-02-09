@@ -2,17 +2,18 @@ import { prisma } from "../prisma/prisma.ts";
 
 const getAvatarURl = async (email) => {
   try {
-    const avatarURL = await prisma.profile.findUnique({
+    const { id: userId } = await prisma.user.findUnique({
       where: { email: email },
+      select: { id: true },
+    });
+
+    const result = await prisma.profile.findUnique({
+      where: { userId: userId },
       select: {
-        profile: {
-          select: {
-            avatarURL: true,
-          },
-        },
+        avatarURL: true,
       },
     });
-    return avatarURL;
+    return result?.avatarURL || null;
   } catch (e) {
     console.error(`error in getAvatarURL: ${e.message}`);
     return false;
@@ -20,10 +21,32 @@ const getAvatarURl = async (email) => {
 };
 
 const setAvatarURL = async (email, url) => {
-  await prisma.profile.update({
-    where: { email: email },
-    data: { avatarURL: url },
-  });
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: email },
+      include: { profile: true },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    if (user.profile) {
+      await prisma.profile.update({
+        where: { userId: user.id },
+        data: { avatarURL: url },
+      });
+    } else {
+      await prisma.profile.create({
+        data: {
+          userId: user.id,
+          avatarURL: url,
+        },
+      });
+    }
+    return true;
+  } catch (e) {
+    console.error(`error in setAvatarURL: ${e.message}`);
+    return false;
+  }
 };
 
 const getOtpExpireDate = async (email) => {
