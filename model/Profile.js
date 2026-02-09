@@ -29,7 +29,10 @@ const setAvatarURL = async (email, url) => {
 
     if (!user) throw new Error("User not found");
 
-    if (user.profile) {
+    const profile = await prisma.profile.findUnique({
+      where: { userId: user.id },
+    });
+    if (profile) {
       await prisma.profile.update({
         where: { userId: user.id },
         data: { avatarURL: url },
