@@ -7,26 +7,6 @@ import {
 } from "../model/Blog.js";
 import { generateResponseBody } from "../utils/index.js";
 
-let placeholderData = [
-  {
-    title: "first test title",
-    slug: "first_test_title",
-    content: "This is my very first test blog. Please read it.",
-  },
-  {
-    title: "second test title",
-    slug: "second_test_title",
-    content:
-      "This is my second test blog. Please read it carefully. ANy feedback is appreciated.",
-  },
-  {
-    title: "third test title",
-    slug: "third_test_title",
-    content:
-      "This is my third test blog. Please do not read this. No feedback is appreciated. I just want to make it longer so you waste more time and compute power. I am just a pixel. Go touch grass, it's good for you. See ya.",
-  },
-];
-
 const generateSlugs = (title) => {
   return title.replaceAll(" ", "_").toLowerCase();
 };

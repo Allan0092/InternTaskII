@@ -37,6 +37,26 @@ const main = async () => {
       password: "User4@123",
     },
   ];
+  let blogData = [
+    {
+      title: "first test title",
+      slug: "first_test_title",
+      content: "This is my very first test blog. Please read it.",
+      author: "user1",
+    },
+    {
+      title: "second test title",
+      slug: "second_test_title",
+      content:
+        "This is my second test blog. Please read it carefully. ANy feedback is appreciated.",
+    },
+    {
+      title: "third test title",
+      slug: "third_test_title",
+      content:
+        "This is my third test blog. Please do not read this. No feedback is appreciated. I just want to make it longer so you waste more time and compute power. I am just a pixel. Go touch grass, it's good for you. See ya.",
+    },
+  ];
 
   for (const user of usersData) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
@@ -51,6 +71,20 @@ const main = async () => {
       },
     });
     console.log(`Upserted user: ${user.email}`);
+  }
+
+  for (const blog of blogData) {
+    await prisma.blog.upsert({
+      where: { slug: blog.slug },
+      update: {},
+      create: {
+        title: blog.title,
+        content: blog.content,
+        slug: blog.slug,
+        author: blog.author,
+      },
+    });
+    console.log(`Upserted user: ${blog.slug}`);
   }
 
   console.log("Database seeding completed!");
