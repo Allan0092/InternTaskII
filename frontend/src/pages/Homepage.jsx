@@ -117,6 +117,18 @@ const Homepage = () => {
             )}
           </div>
           <div>
+            {isSignedIn && !adminUser && (
+              <button
+                className="border-2 py-3 px-5 bg-green-400 text-black rounded-2xl mx-2"
+                onClick={() => {
+                  navigate("/profile");
+                }}
+              >
+                Profile
+              </button>
+            )}
+          </div>
+          <div>
             {adminUser && (
               <button
                 className="border-2 py-3 px-5 bg-gray-500 text-black rounded-2xl mx-2"

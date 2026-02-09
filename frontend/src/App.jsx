@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Navbar from "./pages/Navbar";
 import Register from "./pages/Register";
 import AdminPanel from "./private/AdminPanel";
+import Profile from "./private/Profile";
 
 const App = () => {
   // const [userRole, setUserRole] = useState("");
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </BrowserRouter>
     </>

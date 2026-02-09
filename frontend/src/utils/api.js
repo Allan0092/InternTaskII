@@ -13,13 +13,9 @@ const sendAxiosRequest = async ({
   query = {},
   header = {},
 }) => {
-  // const api = axios.create({
-  //   baseURL: `${URL}`,
-  //   headers: header,
-  //   url: url,
-  //   method: method,
-  // });
   try {
+    const isFormData = body instanceof FormData;
+
     const response = await axios({
       method: method.toLowerCase(),
       baseURL: URL,
@@ -27,13 +23,14 @@ const sendAxiosRequest = async ({
       params: query,
       data: body,
       headers: {
-        "Content-Type": "application/json",
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...header,
       },
     });
     return response.data;
   } catch (e) {
     console.error("error in sendAxiosRequest: ", e);
+    throw e;
   }
 };
 

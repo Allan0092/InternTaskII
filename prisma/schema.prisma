@@ -43,7 +43,7 @@ model Profile {
   resetPasswordExpire DateTime?
   otp                 String?
 
-  user   User @relation(fields: [id], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @unique
 
   @@map("profile")
