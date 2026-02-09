@@ -37,7 +37,19 @@ const provideAvatarURL = async (ctx) => {
   } catch (e) {
     console.error(e.message);
     ctx.body = generateResponseBody({
-      message: e.message ?? "Error in retrieving avatar url",
+      error: e.message ?? "Error in retrieving avatar url",
+    });
+  }
+};
+
+const saveAvatarUrl = async (ctx) => {
+  try {
+  } catch (e) {
+    console.error(`Error in saving avatar url`);
+
+    ctx.body = generateResponseBody({
+      success: false,
+      message: "Could not save data",
     });
   }
 };
@@ -69,7 +81,7 @@ const sendOtp = async (ctx) => {
     });
   } catch (e) {
     console.error(e.message);
-    ctx.body = generateResponseBody();
+    ctx.body = generateResponseBody({ error: e.message });
   }
 };
 
@@ -106,7 +118,7 @@ const verifyOTP = (ctx) => {
       message: "OTP code matches!",
     });
   } catch (e) {
-    ctx.body = generateResponseBody();
+    ctx.body = generateResponseBody({ error: e.message });
   }
 };
 

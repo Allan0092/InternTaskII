@@ -39,7 +39,7 @@ const authorizeAdminRequest = async (ctx, next) => {
       `Error in authorizing role: ${e.message ?? "Error in authorising role"}`,
     );
     ctx.body = generateResponseBody({
-      message: e.message ?? "Error in authorising role",
+      error: e.message ?? "Error in authorising role",
     });
   }
 };

@@ -53,7 +53,7 @@ const addBlog = async (ctx) => {
   } catch (e) {
     console.log(`Error in addBlog:\n${e.message}`);
     ctx.response.status = 500;
-    ctx.body = generateResponseBody({ message: e.message });
+    ctx.body = generateResponseBody({ error: e.message });
   }
 };
 
@@ -70,7 +70,7 @@ const getAllBlog = async (ctx) => {
   } catch (e) {
     console.error(`Error in getAllBlog: ${e.message}`);
     ctx.response.status = 500;
-    ctx.body = generateResponseBody();
+    ctx.body = generateResponseBody({ error: e.message });
   }
 };
 
@@ -91,7 +91,7 @@ const getBySlug = async (ctx) => {
   } catch (e) {
     console.error(e.message);
     ctx.response.status = 500;
-    ctx.body = generateResponseBody({ message: e.message });
+    ctx.body = generateResponseBody({ error: e.message });
   }
 };
 
@@ -108,7 +108,7 @@ const deleteBlog = async (ctx) => {
     });
   } catch (e) {
     ctx.body = generateResponseBody({
-      message: e.message ?? "Could not delete blog.",
+      error: e.message ?? "Could not delete blog.",
     });
   }
 };

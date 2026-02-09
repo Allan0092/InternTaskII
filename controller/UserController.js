@@ -27,7 +27,7 @@ const registerUser = async (ctx) => {
   } catch (e) {
     ctx.response.status = 500;
     ctx.body = generateResponseBody({
-      message: "Something went wrong. try again later.",
+      error: "Something went wrong. try again later.",
     });
   }
 };
@@ -56,7 +56,7 @@ const getUsers = async (ctx) => {
     console.log(`Users retrieved: ${users}`);
   } catch (e) {
     ctx.response.body = 500;
-    ctx.body = generateResponseBody("Could not retrieve users.");
+    ctx.body = generateResponseBody({ error: "Could not retrieve users." });
   }
 };
 
@@ -92,7 +92,7 @@ const login = async (ctx) => {
   } catch (e) {
     console.error(`Login error: ${e.message}`);
     ctx.response.body = 500;
-    ctx.body = generateResponseBody();
+    ctx.body = generateResponseBody({ error: e.message });
   }
 };
 
