@@ -186,6 +186,20 @@ const changeUserPassword = async (resetToken, password) => {
   }
 };
 
+const getOtpAndExpireDateByToken = async (token) => {
+  try {
+    const profile = await prisma.profile.findFirst({
+      where: { resetToken: token },
+      select: { resetPasswordExpire: true, otp: true },
+    });
+    if (!profile) throw new Error("Profile with token not found.");
+    return profile;
+  } catch (e) {
+    console.error(`Error: ${e.message}`);
+    return false;
+  }
+};
+
 const clearResetPasswordData = async (resetToken) => {
   try {
     await prisma.profile.update({
@@ -207,6 +221,7 @@ export {
   changeUserPassword,
   clearResetPasswordData,
   getAvatarURl,
+  getOtpAndExpireDateByToken,
   getOTPCode,
   getOtpExpireDate,
   setAvatarURL,

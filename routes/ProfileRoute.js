@@ -5,7 +5,7 @@ import {
   saveAvatarUrl,
   sendOtp,
   upload,
-  verifyOTPwithEmail,
+  verifyOTPwithToken,
 } from "../controller/ProfileController.js";
 import { verifyEmailExists } from "../middleware/Auth.js";
 
@@ -14,7 +14,7 @@ const profileRouter = new Router({ prefix: "/profiles" });
 profileRouter.get("/");
 profileRouter.post("/otp", verifyEmailExists, sendOtp); // generate otp, set expiry
 // profileRouter.post("/verify-otp", verifyOTPwithEmail, resetPassword);
-profileRouter.post("/password/reset", verifyOTPwithEmail, resetPassword);
+profileRouter.post("/password/reset", verifyOTPwithToken, resetPassword);
 // profileRouter.post("/password/reset", verifyOTP, resetPassword);
 
 // profileRouter.post("/mail", sendMail);
