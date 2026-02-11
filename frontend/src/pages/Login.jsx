@@ -140,6 +140,15 @@ const Login = () => {
                 ← Back to Home
               </button>
             </div>
+            <p className="text-center text-sm text-gray-600 mt-4">
+              <button
+                type="button"
+                onClick={() => navigate("/forgot")}
+                className="text-blue-500 hover:text-blue-600 font-medium"
+              >
+                forgor password?
+              </button>
+            </p>
 
             <p className="text-center text-sm text-gray-600 mt-4">
               Don't have an account?{" "}
