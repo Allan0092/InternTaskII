@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { getUserByEmail } from "../model/User.js";
 import { generateResponseBody } from "../utils/index.js";
 
 const authenticateToken = (token) => {
@@ -44,6 +45,20 @@ const authorizeAdminRequest = async (ctx, next) => {
   }
 };
 
+const verifyEmailExists = async (ctx, next) => {
+  try {
+    const { email } = ctx.request.body;
+    if (!email) throw new Error("Email not provided");
+
+    const user = await getUserByEmail(email);
+    if (!user) throw new Error("Email not found.");
+
+    await next();
+  } catch (e) {
+    ctx.body = generateResponseBody({ error: e.message });
+  }
+};
+
 const authorizeUserEmail = async (ctx, next) => {
   try {
     const { email } = ctx.request.body;
@@ -65,4 +80,5 @@ export {
   authoriseRole,
   authorizeAdminRequest,
   authorizeUserEmail,
+  verifyEmailExists,
 };

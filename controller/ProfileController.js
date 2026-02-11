@@ -1,4 +1,5 @@
 import multer from "@koa/multer";
+import bcrypt from "bcryptjs";
 import "dotenv/config.js";
 import fs from "node:fs";
 import path from "node:path";
@@ -6,11 +7,13 @@ import { fileURLToPath } from "node:url";
 import { v4 } from "uuid";
 
 import {
+  changeUserPassword,
+  clearResetPasswordData,
   getAvatarURl,
   getOTPCode,
   getOtpExpireDate,
   setAvatarURL,
-  setOtpCodeAndExpiry,
+  setOtpCodeAndExpiryAndToken,
 } from "../model/Profile.js";
 import { getUserByEmail } from "../model/User.js";
 import { extractEmailFromToken, generateResponseBody } from "../utils/index.js";
@@ -125,7 +128,8 @@ const provideAvatarURL = async (ctx) => {
 const sendOtp = async (ctx) => {
   try {
     const { email } = ctx.request.body;
-    if (!getUserByEmail(email)) throw new Error("email not found.");
+    const user = await getUserByEmail(email);
+    if (!user) throw new Error("email not found.");
 
     const {
       otp: generatedOtp,
@@ -144,7 +148,12 @@ const sendOtp = async (ctx) => {
 
     if (!mailsent) throw new Error("Please provide valid email.");
 
-    const result = setOtpCodeAndExpiry(email, generatedOtp, generatedExpiry);
+    const result = setOtpCodeAndExpiryAndToken(
+      email,
+      generatedOtp,
+      generatedExpiry,
+      token,
+    );
 
     if (!result) throw new Error("otp cannot be stored");
 
@@ -159,11 +168,11 @@ const sendOtp = async (ctx) => {
   }
 };
 
-const verifyOTPwithEmail = (ctx) => {
+const verifyOTPwithEmail = async (ctx, next) => {
   try {
     const { email, otp: providedOtp } = ctx.request.body;
 
-    const expiryDate = getOtpExpireDate(email);
+    const expiryDate = await getOtpExpireDate(email);
     if (!expiryDate) {
       ctx.body = generateResponseBody({ message: "otp has not been sent" });
       return;
@@ -174,7 +183,7 @@ const verifyOTPwithEmail = (ctx) => {
       return;
     }
 
-    const otp = getOTPCode(email);
+    const otp = await getOTPCode(email);
     if (!otp) {
       ctx.body = generateResponseBody({
         message: "Otp code has not been generated",
@@ -191,12 +200,13 @@ const verifyOTPwithEmail = (ctx) => {
       success: true,
       message: "OTP code matches!",
     });
+    await next();
   } catch (e) {
     ctx.body = generateResponseBody({ error: e.message });
   }
 };
 
-const verifyOTP = (ctx) => {
+const verifyOTP = async (ctx, next) => {
   try {
     const { otp: providedOtp } = ctx.request.body;
 
@@ -224,9 +234,35 @@ const verifyOTP = (ctx) => {
       return;
     }
 
+    // ctx.body = generateResponseBody({
+    //   success: true,
+    //   message: "OTP code matches!",
+    // });
+    await next();
+  } catch (e) {
+    ctx.body = generateResponseBody({ error: e.message });
+  }
+};
+
+const resetPassword = async (ctx) => {
+  try {
+    const { resetToken, password, confirmPassword } = ctx.request.body; //TODO: resetToken
+    if (!password || !confirmPassword)
+      throw new Error("Password or confirm Password missing.");
+    if (!password === confirmPassword)
+      throw new Error("Password and confirm Password does not match.");
+
+    if (!resetToken) throw new Error("Reset token not provided.");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const result = await changeUserPassword(resetToken, hashedPassword);
+    if (!result) throw new Error("Could not change password.");
+    const flush = await clearResetPasswordData(resetToken);
+    if (!flush) throw new Error("Could not erase data after password reset.");
+
     ctx.body = generateResponseBody({
       success: true,
-      message: "OTP code matches!",
+      message: "Password changed successfully.",
     });
   } catch (e) {
     ctx.body = generateResponseBody({ error: e.message });
@@ -236,8 +272,10 @@ const verifyOTP = (ctx) => {
 export {
   getAvatarURl,
   provideAvatarURL,
+  resetPassword,
   saveAvatarUrl,
   sendOtp,
   upload,
+  verifyOTP,
   verifyOTPwithEmail,
 };

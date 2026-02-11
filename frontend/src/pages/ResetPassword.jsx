@@ -26,10 +26,10 @@ const ResetPassword = () => {
   }, []);
   return (
     <>
-      <div className="text-2xl">
+      <div className="flex flex-col items-center text-2xl">
         <h1>Reset Password</h1>
       </div>
-      <div className="border">
+      <div className="flex border items-center flex-col">
         <div>
           <div>Otp:</div>
           <div>
@@ -52,11 +52,12 @@ const ResetPassword = () => {
               value={formData.password}
               id="password"
               onChange={handleChange}
+              className="border"
             />
           </div>
         </div>
         <div>
-          <div>Confirm Password</div>
+          <div>Confirm Password:</div>
           <div>
             <input
               type="confirmPassword"
@@ -64,12 +65,13 @@ const ResetPassword = () => {
               value={formData.confirmPassword}
               id="confirmPassword"
               onChange={handleChange}
+              className="border "
             />
           </div>
         </div>
         <div>
           <button
-            className=" rounded-2xl border p-2 font-bold bg-blue-400"
+            className=" rounded-2xl border p-2 font-bold bg-blue-400 my-5"
             type="submit"
             onClick={handleSubmit}
           >
