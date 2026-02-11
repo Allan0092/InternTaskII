@@ -27,7 +27,9 @@
     "koa-static": "^5.0.0",
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",
-    "pg": "^8.17.2"
+    "pg": "^8.17.2",
+    "uuid": "^13.0.0",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@types/koa": "^3.0.1",

@@ -118,6 +118,35 @@ const setOtpCodeAndExpiry = async (email, otp, datetime) => {
   }
 };
 
+const setOtpCodeAndExpiryAndToken = async (email, otp, datetime, token) => {
+  const user = await prisma.user.findUnique({
+    where: { email: email },
+    include: { profile: true },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  const profile = await prisma.profile.findUnique({
+    where: { userId: user.id },
+  });
+  if (profile) {
+    await prisma.profile.update({
+      where: { userId: user.id },
+      data: { resetPasswordExpire: datetime, otp: otp, resetToken: token },
+    });
+  } else {
+    await prisma.profile.create({
+      data: {
+        userId: user.id,
+        resetPasswordExpire: datetime,
+        otp: otp,
+        resetToken: token,
+      },
+    });
+  }
+  return true;
+};
+
 export {
   getAvatarURl,
   getOTPCode,
@@ -125,5 +154,6 @@ export {
   setAvatarURL,
   setOTPCode,
   setOtpCodeAndExpiry,
+  setOtpCodeAndExpiryAndToken,
   setOtpExpireDate,
 };

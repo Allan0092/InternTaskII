@@ -42,6 +42,7 @@ model Profile {
   avatarURL           String    @default("default.png")
   resetPasswordExpire DateTime?
   otp                 String?
+  resetToken          String?
 
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @unique

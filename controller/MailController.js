@@ -26,13 +26,23 @@ const sendRealMail = async ({ email = "author@email.com" } = {}) => {
   console.log("Message sent:", info.messageId);
 };
 
-const sendOtpMail = async ({ email, otp, expiry } = {}) => {
+const sendOtpMail = async ({ email, otp, expiry, resetURL } = {}) => {
   const info = await transporter.sendMail({
     from: '"Blog Website <blog@email.com>"',
     to: email,
     subject: "Your otp code",
     text: `Your otp code is \n ${otp}`,
-    html: `<b>Your otp code is \n ${otp}<b>`,
+    html: `
+    <div>
+        <div>
+            <b>Your otp code is \n ${otp}<b>
+        </div>
+        <p>Enter this otp code to the link below.</p>
+        <div>
+            <a href="${resetURL}">Password Change Link</a>
+        </div>
+    </div>
+    `,
   });
   console.log("Otp email sent:", info.messageId);
   return true;

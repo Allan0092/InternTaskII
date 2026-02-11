@@ -1,7 +1,10 @@
 import multer from "@koa/multer";
+import "dotenv/config.js";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { v4 } from "uuid";
+
 import {
   getAvatarURl,
   getOTPCode,
@@ -77,16 +80,23 @@ const saveAvatarUrl = async (ctx) => {
   }
 };
 
-const generateOtpDigitsAndExpiry = ({ validMinutes = 10, digits = 6 } = {}) => {
+const generateOtpDigitsAndExpiryAndToken = ({
+  validMinutes = 10,
+  digits = 6,
+} = {}) => {
   try {
     const generatedOtp = Math.floor(
       10 ** (digits - 1) + Math.random() * (9 * 10 ** (digits - 1)),
     ).toString(); // 6 digits
+
     const expiryDate = new Date();
     expiryDate.setMinutes(expiryDate.getMinutes() + validMinutes); // 10 minutes
-    return { otp: generatedOtp, validFor: expiryDate };
+
+    const token = v4();
+
+    return { otp: generatedOtp, validFor: expiryDate, token: token };
   } catch (e) {
-    return;
+    throw e;
   }
 };
 
@@ -117,13 +127,19 @@ const sendOtp = async (ctx) => {
     const { email } = ctx.request.body;
     if (!getUserByEmail(email)) throw new Error("email not found.");
 
-    const { otp: generatedOtp, validFor: generatedExpiry } =
-      generateOtpDigitsAndExpiry();
+    const {
+      otp: generatedOtp,
+      validFor: generatedExpiry,
+      token,
+    } = generateOtpDigitsAndExpiryAndToken();
+
+    const resetURL = `${process.env.FRONTEND_URL}/reset/${token}`;
 
     const mailsent = await sendOtpMail({
       email: email,
       otp: generatedOtp,
       expiry: "",
+      resetURL: resetURL,
     });
 
     if (!mailsent) throw new Error("Please provide valid email.");
@@ -143,9 +159,46 @@ const sendOtp = async (ctx) => {
   }
 };
 
-const verifyOTP = (ctx) => {
+const verifyOTPwithEmail = (ctx) => {
   try {
     const { email, otp: providedOtp } = ctx.request.body;
+
+    const expiryDate = getOtpExpireDate(email);
+    if (!expiryDate) {
+      ctx.body = generateResponseBody({ message: "otp has not been sent" });
+      return;
+    }
+    const now = new Date();
+    if (now > expiryDate) {
+      ctx.body = generateResponseBody({ message: "the otp code has expired" });
+      return;
+    }
+
+    const otp = getOTPCode(email);
+    if (!otp) {
+      ctx.body = generateResponseBody({
+        message: "Otp code has not been generated",
+      });
+      return;
+    }
+
+    if (otp !== providedOtp) {
+      ctx.body = generateResponseBody({ message: "Invalid otp" });
+      return;
+    }
+
+    ctx.body = generateResponseBody({
+      success: true,
+      message: "OTP code matches!",
+    });
+  } catch (e) {
+    ctx.body = generateResponseBody({ error: e.message });
+  }
+};
+
+const verifyOTP = (ctx) => {
+  try {
+    const { otp: providedOtp } = ctx.request.body;
 
     const expiryDate = getOtpExpireDate(email);
     if (!expiryDate) {
@@ -186,5 +239,5 @@ export {
   saveAvatarUrl,
   sendOtp,
   upload,
-  verifyOTP,
+  verifyOTPwithEmail,
 };
